@@ -4,7 +4,6 @@ resource "aws_subnet" "public" {
   availability_zone                              = element(var.azs, count.index)
   cidr_block                                     = element(var.public_subnet_cidrs, count.index)
   map_public_ip_on_launch                        = false
-  private_dns_hostname_type_on_launch            = false
   vpc_id                                         = local.vpc_id
 
   tags = merge(
