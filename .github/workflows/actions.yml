@@ -14,10 +14,10 @@ on:
         type: choice
         description: "Choose apply or destroy infra"
         required: true
+        default: "apply"
         options:
           - apply
           - destroy
-        default: "apply"
       region:
         type: choice
         description: "Choose infra region"
@@ -65,22 +65,22 @@ jobs:
 
       - name: Terraform plan
         id: plan-apply
-        if: github.event.inputs.state == "apply"
+        if: ${{ github.event.inputs.state == 'apply' }}
         run: terraform plan -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan
 
       - name: Terraform apply
         id: apply
-        if: github.event.inputs.state == "apply"
+        if: ${{ github.event.inputs.state == 'apply' }}
         run: terraform apply -input=false -var-file=${{ env.VAR_FILE }} -auto-approve -compact-warnings
 
       - name: Terraform plan
         id: plan-destroy
-        if: github.event.inputs.state == "destroy"
+        if: ${{ github.event.inputs.state == 'destroy' }}
         run: terraform plan -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan terraform.tfplan
 
       - name: Terraform destroy
         id: destroy
-        if: github.event.inputs.state == "destroy"
+        if: ${{ github.event.inputs.state == 'destroy' }}
         run: terraform destroy -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan terraform.tfplan
 
 
