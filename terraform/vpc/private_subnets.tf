@@ -8,7 +8,7 @@ resource "aws_subnet" "private" {
 
   tags = merge(
     {
-      Name = format("%s-%s-public-subnet-%s", var.tag_product, var.tag_environment, count.index)
+      Name = format("%s-%s-private-subnet-%s", var.tag_product, var.tag_environment, count.index)
       Type = "private"
     },
     local.tags
