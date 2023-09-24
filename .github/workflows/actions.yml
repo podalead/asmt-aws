@@ -39,8 +39,8 @@ jobs:
     environment: "aws-eks-${{ github.event.inputs.env }}"
     env:
       WORK_DIR: "terraform/${{ github.event.inputs.module }}"
-      VAR_FILE: "${{ env.WORK_DIR }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/terraform.tfvars"
-      CONFIG_PATH: "${{ env.WORK_DIR }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/config.s3.tfbackend"
+      VAR_FILE: "${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/terraform.tfvars"
+      CONFIG_PATH: "${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/config.s3.tfbackend"
     permissions:
       id-token: write
       contents: read
