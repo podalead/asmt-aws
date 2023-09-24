@@ -1,0 +1,86 @@
+name: 'ASMT AWS EKS'
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: "Select env to where need to deploy"
+        required: true
+        default: "dev"
+        options:
+          - dev
+      state:
+        type: choice
+        description: "Choose apply or destroy infra"
+        required: true
+        options:
+          - apply
+          - destroy
+        default: "apply"
+      region:
+        type: choice
+        description: "Choose infra region"
+        required: true
+        options:
+          - eu-west-1
+        default: "eu-west-1"
+      module:
+        type: choice
+        description: "Select provision part"
+        required: true
+        options:
+          - vpc
+          - eks
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: "aws-infra-${{ github.event.inputs.env }}"
+    env:
+      VAR_FILE: "${{ github.workspace }}/terraform/${{ github.event.inputs.module }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/terraform.tfvars"
+      CONFIG_PATH: "${{ github.workspace }}/terraform/${{ github.event.inputs.module }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/config.s3.tfbackend"
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials for account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        id: init
+        run: terraform init -input=false -reconfigure -backend-config=${{ env.CONFIG_PATH }}
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform plan
+        id: plan-apply
+        if: github.event.inputs.state == "apply"
+        run: terraform plan -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan
+
+      - name: Terraform apply
+        id: apply
+        if: github.event.inputs.state == "apply"
+        run: terraform apply -input=false -var-file=${{ env.VAR_FILE }} -auto-approve -compact-warnings
+
+      - name: Terraform plan
+        id: plan-destroy
+        if: github.event.inputs.state == "destroy"
+        run: terraform plan -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan terraform.tfplan
+
+      - name: Terraform destroy
+        id: destroy
+        if: github.event.inputs.state == "destroy"
+        run: terraform destroy -input=false -var-file=${{ env.VAR_FILE }} -compact-warnings -out=terraform.tfplan terraform.tfplan
+
+
