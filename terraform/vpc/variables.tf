@@ -33,12 +33,12 @@ variable "vpc_cidr" {
 
 variable "public_subnet_cidrs" {
   type = set(string)
-  default = set([])
+  default = []
 }
 
 variable "private_subnet_cidrs" {
   type = set(string)
-  default = set([])
+  default = []
 }
 
 variable "azs" {
