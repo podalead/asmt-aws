@@ -19,6 +19,7 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.nat.id
   subnet_id = element(aws_subnet.public[*].id, 0)
 
   tags = merge(
