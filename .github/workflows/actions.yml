@@ -22,9 +22,9 @@ on:
         type: choice
         description: "Choose infra region"
         required: true
+        default: "eu-west-1"
         options:
           - eu-west-1
-        default: "eu-west-1"
       module:
         type: choice
         description: "Select provision part"
@@ -36,7 +36,7 @@ on:
 jobs:
   provision:
     runs-on: ubuntu-latest
-    environment: "aws-infra-${{ github.event.inputs.env }}"
+    environment: "aws-eks-${{ github.event.inputs.env }}"
     env:
       VAR_FILE: "${{ github.workspace }}/terraform/${{ github.event.inputs.module }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/terraform.tfvars"
       CONFIG_PATH: "${{ github.workspace }}/terraform/${{ github.event.inputs.module }}/${{ github.event.inputs.env }}-${{ github.event.inputs.region }}/config.s3.tfbackend"
