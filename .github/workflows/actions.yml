@@ -88,6 +88,6 @@ jobs:
         id: destroy
         working-directory: ${{ env.WORK_DIR }}
         if: ${{ github.event.inputs.state == 'destroy' }}
-        run: terraform destroy -input=false -var-file=${{ env.VAR_FILE }} -auto-approve -compact-warnings terraform.tfplan
+        run: terraform destroy -input=false -var-file=${{ env.VAR_FILE }} -auto-approve -compact-warnings
 
 
