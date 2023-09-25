@@ -51,7 +51,7 @@ resource "aws_security_group" "lt_default" {
 
   egress {
     from_port = 0
-    to_port = 65555
+    to_port = 0
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -106,28 +106,28 @@ resource "aws_iam_instance_profile" "this" {
   }
 }
 
-#resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
-#  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-#  cluster_name   = aws_eks_cluster.asmt_eks_cluster.name
-#  node_role_arn  = aws_iam_role.asmt_eks_node_group_role.arn
-#  subnet_ids     = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
-#
-#  scaling_config {
-#    min_size     = 1
-#    desired_size = 2
-#    max_size     = 3
-#  }
-#
-#  launch_template {
-#    version = "$Latest"
-#    name    = aws_launch_template.asmt_eks_launch_template.name
-#  }
-#
-#  tags = merge(
-#    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group" }
-#    local.tags
-#  )
-#}
+resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
+  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  cluster_name   = aws_eks_cluster.asmt_eks_cluster.name
+  node_role_arn  = aws_iam_role.asmt_eks_node_group_role.arn
+  subnet_ids     = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
+
+  scaling_config {
+    min_size     = 1
+    desired_size = 2
+    max_size     = 3
+  }
+
+  launch_template {
+    version = "$Latest"
+    name    = aws_launch_template.asmt_eks_launch_template.name
+  }
+
+  tags = merge(
+    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group" }
+    local.tags
+  )
+}
 
 resource "aws_iam_role" "asmt_eks_node_group_role" {
   name = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"

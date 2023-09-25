@@ -14,7 +14,7 @@ resource "aws_iam_openid_connect_provider" "demo" {
 
 data "aws_iam_policy_document" "example_assume_role_policy" {
   statement {
-    actions = ["sts: AssumeRoleWithWebIdentity"]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
 
     condition {
@@ -30,8 +30,8 @@ data "aws_iam_policy_document" "example_assume_role_policy" {
   }
 }
 resource "aws_iam_role" "aws-node" {
-  assume_role_policy = data.aws_iam_policy_document.example_assume_role_policy.json
   name               = "aws-node"
+  assume_role_policy = data.aws_iam_policy_document.example_assume_role_policy.json
 }
 
 resource "aws_eks_identity_provider_config" "demo" {
