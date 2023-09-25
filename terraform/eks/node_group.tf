@@ -139,9 +139,9 @@ resource "aws_iam_role" "asmt_eks_node_group_role" {
   )
 }
 
-resource "aws_iam_policy_attachment" "asmt_eks_node_group_role_policies_att" {
+resource "aws_iam_role_policy_attachment" "asmt_eks_node_group_role_policies_att" {
   for_each = local.worker_node_policy
 
-  name       = aws_iam_role.asmt_eks_node_group_role.name
+  role       = aws_iam_role.asmt_eks_node_group_role.name
   policy_arn = each.value
 }

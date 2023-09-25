@@ -27,17 +27,17 @@ locals {
       protocol    = "-1"
       type        = "ingress"
     }
-    http_ingress = {
-      cidr_blocks = ["0.0.0.0/0"]
-      from_port   = 80
-      to_port     = 80
-      protocol    = "-1"
-      type        = "ingress"
-    }
+#    http_ingress = {
+#      cidr_blocks = ["0.0.0.0/0"]
+#      from_port   = 80
+#      to_port     = 80
+#      protocol    = "-1"
+#      type        = "ingress"
+#    }
     all_egress = {
       cidr_blocks = ["0.0.0.0/0"]
       from_port   = 0
-      to_port     = 65365
+      to_port     = 0
       protocol    = "-1"
       type        = "egress"
     }

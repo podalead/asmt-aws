@@ -51,7 +51,7 @@ variable "eks_ip_family" {
 
 variable "eks_service_ipv4_cidr" {
   type = string
-  default = "10.0.255.0/24"
+  default = "192.168.1.0/24"
 }
 
 variable "eks_addon_name" {
