@@ -19,27 +19,27 @@ locals {
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   ])
 
-  eks_seg_rules = [
-    {
-      cidr_blocks       = ["0.0.0.0/0"]
-      from_port         = 443
-      to_port           = 443
-      protocol          = "-1"
-      type              = "ingress"
-    },
-    {
-      cidr_blocks       = ["0.0.0.0/0"]
-      from_port         = 80
-      to_port           = 80
-      protocol          = "-1"
-      type              = "ingress"
-    },
-    {
-      from_port         = ["0.0.0.0/0"]
-      from_port         = 0
-      to_port           = 65365
-      protocol          = "-1"
-      type              = "egress"
+  eks_seg_rules = {
+    https_ingress = {
+      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 443
+      to_port     = 443
+      protocol    = "-1"
+      type        = "ingress"
     }
-  ]
+    http_ingress = {
+      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 80
+      to_port     = 80
+      protocol    = "-1"
+      type        = "ingress"
+    }
+    all_egress = {
+      from_port = ["0.0.0.0/0"]
+      from_port = 0
+      to_port   = 65365
+      protocol  = "-1"
+      type      = "egress"
+    }
+  }
 }
