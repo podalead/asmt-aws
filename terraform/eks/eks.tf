@@ -65,7 +65,7 @@ resource "aws_security_group" "asmt_eks_sg" {
 }
 
 resource "aws_security_group_rule" "asmt_eks_sg_rule" {
-  for_each = toset(local.eks_seg_rules)
+  for_each = { for k, v in toset(local.eks_seg_rules): k => v }
 
   security_group_id = aws_security_group.asmt_eks_sg.id
 

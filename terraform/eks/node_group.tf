@@ -1,6 +1,6 @@
 resource "aws_launch_template" "asmt_eks_launch_template" {
   name = "${var.tag_product}-${var.tag_environment}-lt"
-  default_version = "$Latest"
+  update_default_version = "$Latest"
 
   image_id = data.aws_ami.eks_default.id
   key_name = aws_key_pair.lt_keypair.key_name
