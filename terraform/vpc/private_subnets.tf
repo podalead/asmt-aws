@@ -9,6 +9,7 @@ resource "aws_subnet" "private" {
   tags = merge(
     {
       Name = format("%s-%s-private-subnet-%s", var.tag_product, var.tag_environment, count.index)
+      "kubernetes.io/role/internal-elb" = 1
       Type = "private"
     },
     local.tags

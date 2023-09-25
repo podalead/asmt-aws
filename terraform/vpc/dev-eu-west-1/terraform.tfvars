@@ -1,7 +1,7 @@
 ### TAGS ###
 tag_product = "asmt"
 tag_contact = "Mykhail Poda"
-tag_cost_code = ""
+tag_cost_code = "00001"
 tag_environment = "dev"
 tag_provisioner = "github"
 
