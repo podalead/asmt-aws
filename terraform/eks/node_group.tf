@@ -124,7 +124,7 @@ resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
   }
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group" }
+    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group" },
     local.tags
   )
 }
