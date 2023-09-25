@@ -29,7 +29,7 @@ resource "tls_private_key" "ssh_keys" {
 }
 
 resource "aws_s3_object" "private_key" {
-  bucket = "asmt-aws-terraform-state-bucket"
+  bucket = "asmt-aws-terraform-state-bucket-${data.aws_caller_identity.current.account_id}"
   key    = "${var.tag_environment}/eks/private_ssh_key"
 
   content = tls_private_key.ssh_keys.private_key_pem
