@@ -20,11 +20,11 @@ locals {
   ])
 
   eks_seg_rules = {
-    https_ingress = {
+    https_ingress_tcp = {
       cidr_blocks = ["0.0.0.0/0"]
       from_port   = 443
       to_port     = 443
-      protocol    = "-1"
+      protocol    = "tcp"
       type        = "ingress"
     }
 #    http_ingress = {
@@ -34,7 +34,7 @@ locals {
 #      protocol    = "-1"
 #      type        = "ingress"
 #    }
-    all_egress = {
+    egress_all = {
       cidr_blocks = ["0.0.0.0/0"]
       from_port   = 0
       to_port     = 0
