@@ -6,7 +6,7 @@ locals {
     Provisioner = var.tag_provisioner
   }
 
-  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
+  vpc_id             = data.terraform_remote_state.vpc.outputs.vpc_id
   private_subnet_ids = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
 
   worker_node_policy = toset([
@@ -35,11 +35,11 @@ locals {
       type        = "ingress"
     }
     all_egress = {
-      from_port = ["0.0.0.0/0"]
-      from_port = 0
-      to_port   = 65365
-      protocol  = "-1"
-      type      = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 0
+      to_port     = 65365
+      protocol    = "-1"
+      type        = "egress"
     }
   }
 }
