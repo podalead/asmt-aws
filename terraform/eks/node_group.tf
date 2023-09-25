@@ -8,10 +8,6 @@ resource "aws_launch_template" "asmt_eks_launch_template" {
   security_group_names = [aws_security_group.lt_default.name]
   ebs_optimized = true
 
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.this.arn
-  }
-
   tags = merge(
     { Name = "${var.tag_product}-${var.tag_environment}-eks-lt" },
     local.tags
@@ -19,8 +15,7 @@ resource "aws_launch_template" "asmt_eks_launch_template" {
 
   depends_on = [
     aws_key_pair.lt_keypair,
-    aws_security_group.lt_default,
-    aws_iam_instance_profile.this
+    aws_security_group.lt_default
   ]
 }
 #
@@ -88,22 +83,6 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
   policy_arn = each.value
   role       = aws_iam_role.this.name
-}
-
-resource "aws_iam_instance_profile" "this" {
-  role = aws_iam_role.this.name
-
-  name        = "${var.tag_product}-${var.tag_environment}-eks-node-iprofile"
-  path        = "/"
-
-  tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-lt-instance-profile" },
-    local.tags
-  )
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {

@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "example_assume_role_policy" {
 
     condition {
       test     = "StringEquals"
-      variable = "${replace(aws_iam_openid_connect_provider.demo.url, "https: //", "")}:sub"
+      variable = "${replace(aws_iam_openid_connect_provider.demo.url, "https://", "")}:sub"
       values   = ["system:serviceaccount:kube-system:aws-node"]
     }
 
@@ -41,7 +41,6 @@ resource "aws_eks_identity_provider_config" "demo" {
     client_id                     = substr(local.oidc_issuer, -32, -1)
     identity_provider_config_name = "asmt-eks-oidc-provider"
     issuer_url                    = "https://${aws_iam_openid_connect_provider.demo.url}"
-
   }
 
   depends_on = [
