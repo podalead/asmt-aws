@@ -69,7 +69,7 @@ resource "aws_iam_role" "this" {
   force_detach_policies = true
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-role" }
+    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-role" },
     local.tags
   )
 }
@@ -95,7 +95,7 @@ resource "aws_iam_instance_profile" "this" {
   path        = "/"
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-lt-instance-profile" }
+    { Name = "${var.tag_product}-${var.tag_environment}-eks-lt-instance-profile" },
     local.tags
   )
 

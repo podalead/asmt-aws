@@ -36,7 +36,7 @@ variable "vpc_remote_state_config" {
 ### NODE GROUP ###
 variable "iam_role_additional_policies" {
   type = set(string)
-  default = toset([])
+  default = []
 }
 
 ### EKS Cluster ###
