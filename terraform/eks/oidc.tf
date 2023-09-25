@@ -1,5 +1,5 @@
 locals {
-  oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity.oidc.issuer
+  oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity[0].oidc[0].issuer
 }
 
 data "tls_certificate" "demo" {
