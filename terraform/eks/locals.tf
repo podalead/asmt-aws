@@ -21,12 +21,21 @@ locals {
 
   eks_seg_rules = [
     {
-      from_port         = 0
-      to_port           = 65365
+      cidr_blocks       = ["0.0.0.0/0"]
+      from_port         = 443
+      to_port           = 443
       protocol          = "-1"
       type              = "ingress"
     },
     {
+      cidr_blocks       = ["0.0.0.0/0"]
+      from_port         = 80
+      to_port           = 80
+      protocol          = "-1"
+      type              = "ingress"
+    },
+    {
+      from_port         = ["0.0.0.0/0"]
       from_port         = 0
       to_port           = 65365
       protocol          = "-1"

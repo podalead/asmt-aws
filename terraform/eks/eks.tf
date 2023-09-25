@@ -69,6 +69,7 @@ resource "aws_security_group_rule" "asmt_eks_sg_rule" {
 
   security_group_id = aws_security_group.asmt_eks_sg.id
 
+  cidr_blocks       = each.value.cidr
   from_port         = each.value.from_port
   to_port           = each.value.to_port
   protocol          = each.value.protocol
