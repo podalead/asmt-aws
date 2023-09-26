@@ -1,5 +1,16 @@
 locals {
-  tags = {
+  eks_cluster_name = "${var.tag_product}-${var.tag_environment}-eks"
+  eks_cluster_role_name = "${var.tag_product}-${var.tag_environment}-eks-role"
+  eks_cluster_idp_role_name = "${var.tag_product}-${var.tag_environment}-oidc-provider-role"
+  eks_cluster_idp_name = "${var.tag_product}-${var.tag_environment}-oidc-provider"
+  eks_cluster_sg_name = "${var.tag_product}-${var.tag_environment}-eks-sg"
+  eks_node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  eks_node_group_role_name = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"
+
+  eks_cluster_oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity[0].oidc[0].issuer
+  oidc_uri = replace(aws_iam_openid_connect_provider.demo.url, "https://", "")
+
+  default_tags = {
     Contact     = var.tag_contact
     Cost_Code   = var.tag_cost_code
     Environment = var.tag_environment
@@ -24,6 +35,13 @@ locals {
       cidr_blocks = ["0.0.0.0/0"]
       from_port   = 443
       to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+    dns_ingress_tcp = {
+      cidr_blocks = [var.eks_service_ipv4_cidr]
+      from_port   = 53
+      to_port     = 53
       protocol    = "tcp"
       type        = "ingress"
     }

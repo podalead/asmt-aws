@@ -54,9 +54,13 @@ variable "eks_service_ipv4_cidr" {
   default = "192.168.1.0/24"
 }
 
-variable "eks_addon_name" {
+#variable "eks_addon_name" {
+#  type = string
+#  default = "vpc-cni"
+#}
+
+variable "eks_addon_lb_version" {
   type = string
-  default = "vpc-cni"
 }
 
 variable "eks_node_instance_type" {

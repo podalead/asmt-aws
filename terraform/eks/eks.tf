@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "asmt_eks_cluster" {
-  name     = "${var.tag_product}-${var.tag_environment}-eks"
+  name     = local.eks_cluster_name
   role_arn = aws_iam_role.asmt_eks_cluster_role.arn
 
   version = var.eks_cluster_version
@@ -17,8 +17,8 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   }
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks" },
-    local.tags
+    { Name = local.eks_cluster_name },
+    local.default_tags
   )
 
   depends_on = [
@@ -33,12 +33,12 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
 #}
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
-  name = "${var.tag_product}-${var.tag_environment}-eks-role"
+  name = local.eks_cluster_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_eks_policy.json
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-role" },
-    local.tags
+    { Name = local.eks_cluster_role_name },
+    local.default_tags
   )
 }
 
@@ -55,12 +55,16 @@ resource "aws_iam_role_policy_attachment" "master_node_policy_attachments" {
 }
 
 resource "aws_security_group" "asmt_eks_sg" {
+  name = local.eks_cluster_sg_name
+
   vpc_id = local.vpc_id
-  name = "${var.tag_product}-${var.tag_environment}-eks-sg"
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-sg" },
-    local.tags
+    {
+      Name = local.eks_cluster_sg_name
+      "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
+    },
+    local.default_tags
   )
 }
 

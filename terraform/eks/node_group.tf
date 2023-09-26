@@ -13,7 +13,6 @@
 #      "kubernetes.io/cluster/${aws_eks_cluster.asmt_eks_cluster.name}" = "owned"
 #      "k8s.io/cluster-autoscaler/${aws_eks_cluster.asmt_eks_cluster.name}" = "owned"
 #      "k8s.io/cluster-autoscaler/enabled" = 1
-#      "aws:ec2launchtemplate:version" =
 #    }
 #  }
 #
@@ -44,7 +43,7 @@ resource "aws_key_pair" "lt_keypair" {
 
   tags = merge(
     { Name = "${var.tag_product}-${var.tag_environment}-eks-lt-keypair" },
-    local.tags
+    local.default_tags
   )
 }
 
@@ -58,7 +57,7 @@ resource "aws_iam_role" "this" {
 
   tags = merge(
     { Name = "${var.tag_product}-${var.tag_environment}-eks-node-role" },
-    local.tags
+    local.default_tags
   )
 }
 
@@ -77,7 +76,7 @@ resource "aws_iam_role_policy_attachment" "additional" {
 }
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
-  node_group_name      = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  node_group_name      = local.eks_node_group_name
   cluster_name         = aws_eks_cluster.asmt_eks_cluster.name
   node_role_arn        = aws_iam_role.asmt_eks_node_group_role.arn
   subnet_ids           = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
@@ -90,29 +89,24 @@ resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
     max_size     = 3
   }
 
-#  remote_access {
-#    source_security_group_ids = []
-#    ec2_ssh_key = aws_key_pair.lt_keypair.public_key
-#  }
-
   #  launch_template {
   #    version = "$Latest"
   #    name    = aws_launch_template.asmt_eks_launch_template.name
   #  }
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group" },
-    local.tags
+    { Name = local.eks_node_group_name },
+    local.default_tags
   )
 }
 
 resource "aws_iam_role" "asmt_eks_node_group_role" {
-  name               = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"
+  name               = local.eks_node_group_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_node_group_policy.json
 
   tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role" },
-    local.tags
+    { Name = local.eks_node_group_role_name },
+    local.default_tags
   )
 }
 
