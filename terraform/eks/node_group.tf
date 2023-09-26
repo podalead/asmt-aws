@@ -1,22 +1,32 @@
-resource "aws_launch_template" "asmt_eks_launch_template" {
-  name                   = "${var.tag_product}-${var.tag_environment}-lt"
-  update_default_version = true
-
-  image_id      = data.aws_ami.eks_default.id
-  key_name      = aws_key_pair.lt_keypair.key_name
-  instance_type = "t3a.small"
-  ebs_optimized = true
-
-  tags = merge(
-    { Name = "${var.tag_product}-${var.tag_environment}-eks-lt" },
-    local.tags
-  )
-
-  depends_on = [
-    aws_key_pair.lt_keypair
-  ]
-}
+#resource "aws_launch_template" "asmt_eks_launch_template" {
+#  name                   = "${var.tag_product}-${var.tag_environment}-lt"
+#  update_default_version = true
 #
+#  image_id      = data.aws_ami.eks_default.id
+#  key_name      = aws_key_pair.lt_keypair.key_name
+#  instance_type = "t3a.small"
+#  ebs_optimized = true
+#
+#  tag_specifications {
+#    resource_type = "ec2"
+#    tags = {
+#      "kubernetes.io/cluster/${aws_eks_cluster.asmt_eks_cluster.name}" = "owned"
+#      "k8s.io/cluster-autoscaler/${aws_eks_cluster.asmt_eks_cluster.name}" = "owned"
+#      "k8s.io/cluster-autoscaler/enabled" = 1
+#      "aws:ec2launchtemplate:version" =
+#    }
+#  }
+#
+#  tags = merge(
+#    { Name = "${var.tag_product}-${var.tag_environment}-eks-lt" },
+#    local.tags
+#  )
+#
+#  depends_on = [
+#    aws_key_pair.lt_keypair
+#  ]
+#}
+
 resource "tls_private_key" "ssh_keys" {
   algorithm = "ED25519"
 }
@@ -68,11 +78,9 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
   node_group_name      = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-  #  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group_"
   cluster_name         = aws_eks_cluster.asmt_eks_cluster.name
   node_role_arn        = aws_iam_role.asmt_eks_node_group_role.arn
   subnet_ids           = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
-  capacity_type        = "SPOT"
   instance_types       = ["t3a.small", "t3.small"]
   disk_size            = "30"
 
@@ -81,6 +89,11 @@ resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
     desired_size = 2
     max_size     = 3
   }
+
+#  remote_access {
+#    source_security_group_ids = []
+#    ec2_ssh_key = aws_key_pair.lt_keypair.public_key
+#  }
 
   #  launch_template {
   #    version = "$Latest"
