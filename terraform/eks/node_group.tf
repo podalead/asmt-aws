@@ -73,7 +73,7 @@ resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
   node_role_arn        = aws_iam_role.asmt_eks_node_group_role.arn
   subnet_ids           = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
   capacity_type        = "SPOT"
-  instance_types       = ["t3a.small"]
+  instance_types       = ["t3a.small", "t3.small"]
   disk_size            = "30"
 
   scaling_config {
