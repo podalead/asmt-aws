@@ -5,7 +5,7 @@ resource "aws_launch_template" "asmt_eks_launch_template" {
   image_id             = data.aws_ami.eks_default.id
   key_name             = aws_key_pair.lt_keypair.key_name
   instance_type        = "t3a.small"
-  security_group_names = [aws_security_group.lt_default.name]
+  security_group_names = [aws_security_group.lt_default.id]
   ebs_optimized        = true
 
   tags = merge(
@@ -87,7 +87,7 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
   #  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group_"
+#  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group_"
   cluster_name           = aws_eks_cluster.asmt_eks_cluster.name
   node_role_arn          = aws_iam_role.asmt_eks_node_group_role.arn
   subnet_ids             = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
