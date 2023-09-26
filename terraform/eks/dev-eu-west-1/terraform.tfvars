@@ -22,12 +22,12 @@ aws_auth_roles = [
   {
     groups: ["system:masters"],
     rolearn: "arn:aws:iam::270930892402:role/github-connection-provider-role"
-    username: "github-connection-provider-role"
+    username: "github-admin"
   },
   {
     groups: ["system:masters"],
-    rolearn: "arn:aws:iam::270930892402:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c",
-    username: "aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c"
+    rolearn: "arn:aws:iam::270930892402:role/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c",
+    username: "cluster-admin"
   }
 ]
 aws_auth_accounts = [
