@@ -69,12 +69,12 @@ variable "aws_auth_node_iam_role_arns_non_windows" {
 }
 
 variable "aws_auth_roles" {
-  type = list(string)
+  type = list(any)
   default = []
 }
 
 variable "aws_auth_users" {
-  type = list(string)
+  type = list(any)
   default = []
 }
 

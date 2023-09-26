@@ -19,8 +19,16 @@ eks_service_ipv4_cidr = "192.168.1.0/24"
 eks_addon_name = "vpc-cni"
 eks_node_instance_type = "t3a.small"
 aws_auth_roles = [
-  "arn:aws:iam::270930892402:role/github-connection-provider-role",
-  "arn:aws:iam::270930892402:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c",
+  {
+    groups: ["system:masters"],
+    rolearn: "arn:aws:iam::270930892402:role/github-connection-provider-role"
+    username: "github-connection-provider-role"
+  },
+  {
+    groups: ["system:masters"],
+    rolearn: "arn:aws:iam::270930892402:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c",
+    username: "aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_2546bd6cb177278c"
+  }
 ]
 aws_auth_accounts = [
   270930892402
