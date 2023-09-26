@@ -1,12 +1,12 @@
 resource "aws_launch_template" "asmt_eks_launch_template" {
-  name = "${var.tag_product}-${var.tag_environment}-lt"
+  name                   = "${var.tag_product}-${var.tag_environment}-lt"
   update_default_version = true
 
-  image_id = data.aws_ami.eks_default.id
-  key_name = aws_key_pair.lt_keypair.key_name
-  instance_type = "t3a.small"
+  image_id             = data.aws_ami.eks_default.id
+  key_name             = aws_key_pair.lt_keypair.key_name
+  instance_type        = "t3a.small"
   security_group_names = [aws_security_group.lt_default.name]
-  ebs_optimized = true
+  ebs_optimized        = true
 
   tags = merge(
     { Name = "${var.tag_product}-${var.tag_environment}-eks-lt" },
@@ -31,7 +31,7 @@ resource "aws_s3_object" "private_key" {
 }
 
 resource "aws_key_pair" "lt_keypair" {
-  key_name = "${var.tag_product}-${var.tag_environment}-eks-lt-keypair"
+  key_name   = "${var.tag_product}-${var.tag_environment}-eks-lt-keypair"
   public_key = tls_private_key.ssh_keys.public_key_openssh
 
   tags = merge(
@@ -41,13 +41,13 @@ resource "aws_key_pair" "lt_keypair" {
 }
 
 resource "aws_security_group" "lt_default" {
-  name = "${var.tag_product}-${var.tag_environment}-lt-sg-default"
+  name   = "${var.tag_product}-${var.tag_environment}-lt-sg-default"
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -79,17 +79,18 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v }
+  for_each = {for k, v in var.iam_role_additional_policies : k => v}
 
   policy_arn = each.value
   role       = aws_iam_role.this.name
 }
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
-  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-  cluster_name   = aws_eks_cluster.asmt_eks_cluster.name
-  node_role_arn  = aws_iam_role.asmt_eks_node_group_role.arn
-  subnet_ids     = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
+  #  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  cluster_name           = aws_eks_cluster.asmt_eks_cluster.name
+  node_role_arn          = aws_iam_role.asmt_eks_node_group_role.arn
+  subnet_ids             = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
 
   scaling_config {
     min_size     = 1
@@ -109,7 +110,7 @@ resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
 }
 
 resource "aws_iam_role" "asmt_eks_node_group_role" {
-  name = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"
+  name               = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"
   assume_role_policy = data.aws_iam_policy_document.assume_node_group_policy.json
 
   tags = merge(
