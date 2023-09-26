@@ -62,3 +62,23 @@ variable "eks_addon_name" {
 variable "eks_node_instance_type" {
   type = string
 }
+
+variable "aws_auth_node_iam_role_arns_non_windows" {
+  type = list(string)
+  default = []
+}
+
+variable "aws_auth_roles" {
+  type = list(string)
+  default = []
+}
+
+variable "aws_auth_users" {
+  type = list(string)
+  default = []
+}
+
+variable "aws_auth_accounts" {
+  type = list(any)
+  default = []
+}

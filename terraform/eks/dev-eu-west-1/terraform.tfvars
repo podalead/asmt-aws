@@ -18,6 +18,11 @@ eks_ip_family = "ipv4"
 eks_service_ipv4_cidr = "192.168.1.0/24"
 eks_addon_name = "vpc-cni"
 eks_node_instance_type = "t3a.small"
+aws_auth_roles = [
+  "AWSReservedSSO_AdministratorAccess_2546bd6cb177278c/*",
+  "AWSReservedSSO_AdministratorAccess_2546bd6cb177278c/poda@cloudninja.com.ua"
+]
+
 
 ### NODE GROUP ###
 iam_role_additional_policies = []

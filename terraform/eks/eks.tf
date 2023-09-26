@@ -76,3 +76,60 @@ resource "aws_security_group_rule" "asmt_eks_sg_rule" {
   type              = each.value.type
 }
 
+################################################################################
+# aws-auth configmap
+################################################################################
+locals {
+  node_iam_role_arns_non_windows = distinct(
+    compact(
+      concat(
+#        [for group in module.eks_managed_node_group : group.iam_role_arn],
+        var.aws_auth_node_iam_role_arns_non_windows,
+      )
+    )
+  )
+
+  aws_auth_configmap_data = {
+    mapRoles = yamlencode(concat(
+      [for role_arn in local.node_iam_role_arns_non_windows : {
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
+      ],
+      var.aws_auth_roles
+    ))
+    mapUsers    = yamlencode(var.aws_auth_users)
+    mapAccounts = yamlencode(var.aws_auth_accounts)
+  }
+}
+
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = local.aws_auth_configmap_data
+
+  lifecycle {
+    ignore_changes = [data, metadata[0].labels, metadata[0].annotations]
+  }
+}
+
+resource "kubernetes_config_map_v1_data" "aws_auth" {
+  force = true
+
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = local.aws_auth_configmap_data
+
+  depends_on = [kubernetes_config_map.aws_auth]
+}
+
