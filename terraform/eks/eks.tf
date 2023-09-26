@@ -42,11 +42,6 @@ resource "aws_iam_role" "asmt_eks_cluster_role" {
   )
 }
 
-resource "aws_iam_policy" "lb_policy" {
-  name = "AWSLoadBalancerControllerIAMPolicy"
-  policy = file("./policies/lb_iam_policy.json")
-}
-
 resource "aws_iam_role_policy_attachment" "master_node_policy_attachments" {
   for_each = local.master_node_policy
 

@@ -8,7 +8,7 @@ data "http" "aws-lb-controller-policy" {
 
 resource "aws_iam_policy" "load-balancer-controller" {
   name = "AWSLoadBalancerControllerIAMPolicy"
-  policy = tostring(data.http.aws-lb-controller-policy.body)
+  policy = tostring(data.http.aws-lb-controller-policy.response_body)
   description = "Load Balancer Controller add-on for EKS"
 }
 
@@ -56,11 +56,17 @@ resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
   }
 }
 
+#resource "helm_release" "eks_cluster_lb_crd" {
+#  name  = ""
+#  repository = "https://aws.github.io/eks-charts"
+#  chart = ""
+#}
+
 resource "helm_release" "eks_cluster_lb_controller" {
   name  = "aws-load-balancer-controller"
 
   repository = "https://aws.github.io/eks-charts"
-  chart = "eks/aws-load-balancer-controller"
+  chart = "aws-load-balancer-controller"
 
   namespace = "kube-system"
 
