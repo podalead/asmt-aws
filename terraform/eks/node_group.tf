@@ -87,7 +87,7 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
   #  node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group"
+  node_group_name_prefix = "${var.tag_product}-${var.tag_environment}-eks-node-group_"
   cluster_name           = aws_eks_cluster.asmt_eks_cluster.name
   node_role_arn          = aws_iam_role.asmt_eks_node_group_role.arn
   subnet_ids             = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
