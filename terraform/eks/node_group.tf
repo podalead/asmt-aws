@@ -5,7 +5,6 @@ resource "aws_launch_template" "asmt_eks_launch_template" {
   image_id             = data.aws_ami.eks_default.id
   key_name             = aws_key_pair.lt_keypair.key_name
   instance_type        = "t3a.small"
-  security_group_names = [aws_security_group.lt_default.id]
   ebs_optimized        = true
 
   tags = merge(
