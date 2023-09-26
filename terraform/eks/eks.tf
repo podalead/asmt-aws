@@ -83,7 +83,7 @@ locals {
   node_iam_role_arns_non_windows = distinct(
     compact(
       concat(
-        [aws_iam_role.asmt_eks_node_group_role],
+        [aws_iam_role.asmt_eks_node_group_role.arn],
         var.aws_auth_node_iam_role_arns_non_windows,
       )
     )
