@@ -15,6 +15,7 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
     endpoint_public_access  = true
     endpoint_private_access = false
   }
+  enabled_cluster_log_types = var.eks_log_types
 
   tags = merge(
     { Name = local.eks_cluster_name },
@@ -27,10 +28,31 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   ]
 }
 
-#resource "aws_eks_addon" "asmt_eks_cluster_addon" {
-#  cluster_name = aws_eks_cluster.asmt_eks_cluster.name
-#  addon_name   = var.eks_addon_name
-#}
+resource "aws_iam_policy" "logs_policy" {
+  name = local.eks_cluster_log_policy_name
+  policy = jsondecode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        "Resource": [
+          "arn:aws:logs:*:*:*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eks_log_policy_attachment" {
+  role       = aws_iam_role.asmt_eks_cluster_role.name
+  policy_arn = aws_iam_policy.logs_policy.arn
+}
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
   name = local.eks_cluster_role_name

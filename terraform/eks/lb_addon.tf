@@ -37,11 +37,6 @@ data "aws_iam_policy_document" "eks_lb_trust_policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "inline-AWSLoadBalancerControllerIAMPolicy" {
-  role       = aws_iam_role.aws-node.name
-  policy_arn = aws_iam_policy.load-balancer-controller.arn
-}
-
 resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
   metadata {
     labels = {
@@ -55,12 +50,6 @@ resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
     }
   }
 }
-
-#resource "helm_release" "eks_cluster_lb_crd" {
-#  name  = ""
-#  repository = "https://aws.github.io/eks-charts"
-#  chart = ""
-#}
 
 resource "helm_release" "eks_cluster_lb_controller" {
   name  = "aws-load-balancer-controller"

@@ -8,26 +8,9 @@ resource "aws_iam_openid_connect_provider" "demo" {
   url             = local.eks_cluster_oidc_issuer
 }
 
-data "aws_iam_policy_document" "example_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    effect  = "Allow"
-
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.demo.arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${local.oidc_uri}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-node"]
-    }
-  }
-}
 resource "aws_iam_role" "aws-node" {
   name               = local.eks_cluster_idp_role_name
-  assume_role_policy = data.aws_iam_policy_document.example_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.eks_lb_trust_policy.json
 }
 
 resource "aws_eks_identity_provider_config" "demo" {

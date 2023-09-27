@@ -1,11 +1,13 @@
 locals {
-  eks_cluster_name = "${var.tag_product}-${var.tag_environment}-eks"
-  eks_cluster_role_name = "${var.tag_product}-${var.tag_environment}-eks-role"
-  eks_cluster_idp_role_name = "${var.tag_product}-${var.tag_environment}-oidc-provider-role"
-  eks_cluster_idp_name = "${var.tag_product}-${var.tag_environment}-oidc-provider"
-  eks_cluster_sg_name = "${var.tag_product}-${var.tag_environment}-eks-sg"
-  eks_node_group_name = "${var.tag_product}-${var.tag_environment}-eks-node-group"
-  eks_node_group_role_name = "${var.tag_product}-${var.tag_environment}-eks-node-group-iam-role"
+  eks_basename = "${var.tag_product}-${var.tag_environment}"
+  eks_cluster_name = "${local.eks_basename}-eks"
+  eks_cluster_role_name = "${local.eks_basename}-eks-role"
+  eks_cluster_idp_role_name = "${local.eks_basename}-oidc-provider-role"
+  eks_cluster_idp_name = "${local.eks_basename}-oidc-provider"
+  eks_cluster_sg_name = "${local.eks_basename}-eks-sg"
+  eks_node_group_name = "${local.eks_basename}-eks-node-group"
+  eks_node_group_role_name = "${local.eks_basename}-eks-node-group-iam-role"
+  eks_cluster_log_policy_name = "${local.eks_basename}-log-policy"
 
   eks_cluster_oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity[0].oidc[0].issuer
   oidc_uri = replace(aws_iam_openid_connect_provider.demo.url, "https://", "")
