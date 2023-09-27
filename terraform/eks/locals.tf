@@ -7,6 +7,7 @@ locals {
   eks_cluster_sg_name = "${local.eks_basename}-eks-sg"
   eks_node_group_name = "${local.eks_basename}-eks-node-group"
   eks_node_group_role_name = "${local.eks_basename}-eks-node-group-iam-role"
+  alb_security_group_name = "${local.eks_basename}-alb-sg"
   eks_cluster_log_policy_name = "${local.eks_basename}-log-policy"
 
   eks_cluster_oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity[0].oidc[0].issuer
@@ -41,6 +42,13 @@ locals {
       type        = "ingress"
     }
     dns_ingress_tcp = {
+      cidr_blocks = [var.eks_service_ipv4_cidr]
+      from_port   = 53
+      to_port     = 53
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+    service_ports_tcp = {
       cidr_blocks = [var.eks_service_ipv4_cidr]
       from_port   = 53
       to_port     = 53
