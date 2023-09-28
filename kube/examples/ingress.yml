@@ -5,7 +5,7 @@ metadata:
   namespace: asmt-aws
   annotations:
     alb.ingress.kubernetes.io/load-balancer-name: 'asmt-eks-dev-alb'
-    alb.ingress.kubernetes.io/security-groups: 'sg-04c4e199aa391f7da'
+#    alb.ingress.kubernetes.io/security-groups: 'sg-04c4e199aa391f7da'
     alb.ingress.kubernetes.io/tags: App=asmt-aws
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip

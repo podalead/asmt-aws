@@ -6,8 +6,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 9000
-      targetPort: 9000
+    - name: app-service-port
+      port: 9000
+      targetPort: app-port
       protocol: TCP
   selector:
     app.kubernetes.io/name: asmt-aws-test-app

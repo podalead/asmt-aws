@@ -26,4 +26,6 @@ spec:
             - name: H2_URL
               value: 'jdbc:h2:mem:testdb'
           ports:
-            - containerPort: 9000
+            - name: app-port
+              containerPort: 9000
+
