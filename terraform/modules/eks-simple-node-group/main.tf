@@ -1,12 +1,11 @@
 locals {
   worker_node_policy = [
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy"
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   ]
 }
 
-data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "assume_node_group_policy" {
@@ -16,7 +15,7 @@ data "aws_iam_policy_document" "assume_node_group_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
+      identifiers = ["ec2.amazonaws.com"]
     }
   }
 }
@@ -78,7 +77,7 @@ resource "aws_iam_role" "asmt_eks_node_group_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "asmt_eks_node_group_role_policies_att" {
-  for_each = toset(local.worker_node_policy)
+  for_each = local.worker_node_policy
 
   role       = aws_iam_role.asmt_eks_node_group_role.name
   policy_arn = each.value
