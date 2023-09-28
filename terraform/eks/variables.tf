@@ -29,7 +29,7 @@ variable "vpc_remote_state_config" {
   type = object({
     bucket = string
     region = string
-    key = string
+    key    = string
   })
 }
 

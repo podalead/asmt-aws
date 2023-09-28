@@ -9,7 +9,7 @@ locals {
   eks_cluster_idp_name        = "${local.eks_basename}-oidc-provider"
   eks_cluster_log_policy_name = "${local.eks_basename}-log-policy"
 
-  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
+  vpc_id                 = data.terraform_remote_state.vpc.outputs.vpc_id
   vpc_private_subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnet_ids
 
   default_tags = {
@@ -111,13 +111,13 @@ locals {
     mapRoles = yamlencode(concat(
       [
         for role_arn in local.node_iam_role_arns_non_windows : {
-          rolearn  = role_arn
-          username = "system:node:{{EC2PrivateDNSName}}"
-          groups = [
-            "system:bootstrappers",
-            "system:nodes",
-          ]
-        }
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups   = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+      }
       ],
       var.aws_auth_roles
     ))
