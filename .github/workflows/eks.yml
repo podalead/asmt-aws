@@ -59,6 +59,11 @@ jobs:
       - name: Terraform init
         id: init
         working-directory: ${{ env.WORK_DIR }}
+        run: terraform fmt -recursive -check ./
+
+      - name: Terraform init
+        id: init
+        working-directory: ${{ env.WORK_DIR }}
         run: terraform init -input=false -reconfigure -backend-config=${{ env.CONFIG_PATH }}
 
       - name: Terraform validate

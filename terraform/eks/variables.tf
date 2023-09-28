@@ -26,22 +26,22 @@ variable "tag_cost_code" {
 
 ### VPC ###
 variable "vpc_cidr" {
-  type = string
+  type    = string
   default = "10.0.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "private_subnet_cidrs" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "azs" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
