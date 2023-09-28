@@ -57,7 +57,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform init
-        id: init
+        id: fmt
         working-directory: ${{ env.WORK_DIR }}
         run: terraform fmt -recursive -check ./
 
