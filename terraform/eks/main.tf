@@ -74,7 +74,7 @@ module "eks_oidc" {
   tags = local.default_tags
 
   depends_on = [
-    module.eks_simple_node_group
+    module.eks_master
   ]
 }
 
@@ -88,6 +88,10 @@ module "eks_lb_controller" {
   eks_oidc_role_name = module.eks_oidc.eks_oidc_role_name
 
   tags = local.default_tags
+
+  depends_on = [
+    module.eks_oidc
+  ]
 }
 
 ################################################################################
