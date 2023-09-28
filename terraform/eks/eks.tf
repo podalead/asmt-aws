@@ -28,9 +28,8 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   ]
 }
 
-resource "aws_iam_role_policy" "logs_policy" {
+resource "aws_iam_policy" "logs_policy" {
   name   = local.eks_cluster_log_policy_name
-  role   = aws_iam_role.asmt_eks_cluster_role.name
   policy = jsondecode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -48,6 +47,11 @@ resource "aws_iam_role_policy" "logs_policy" {
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "logs_policy" {
+  role       = aws_iam_role.asmt_eks_cluster_role.name
+  policy_arn = aws_iam_policy.logs_policy.arn
 }
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
