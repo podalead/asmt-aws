@@ -16,15 +16,11 @@ spec:
       containers:
         - name: testerization
           image: heryv1m/testerization:latest
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: 'prod'
-            - name: H2_USERNAME
-              value: 'h2'
-            - name: H2_PASSWORD
-              value: 'h2pass'
-            - name: H2_URL
-              value: 'jdbc:h2:mem:testdb'
+          envFrom:
+            - configMapRef:
+                name: asmt-aws-test-app-config-map
+            - secretRef:
+                name: asmt-aws-test-app-db-secret
           ports:
             - name: app-port
               containerPort: 9000
