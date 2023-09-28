@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: asmt-aws-busybog-wget-job
+  namespace: asmt-aws
+spec:
+  template:
+    spec:
+      containers:
+        - name: busybox
+          image: busybox:latest
+          command: ["wget", "https://jsonplaceholder.typicode.com/todos/1"]
+      restartPolicy: Never
+  backoffLimit: 4

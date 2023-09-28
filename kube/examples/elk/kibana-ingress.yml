@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana
+  namespace: kube-logging
+  labels:
+    app: kibana
+  annotations:
+    alb.ingress.kubernetes.io/load-balancer-name: 'asmt-eks-dev-alb-logging'
+    alb.ingress.kubernetes.io/tags: App=asmt-aws
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+#    alb.ingress.kubernetes.io/actions.kibana-redirect: '{"type":"redirect", "redirectConfig":{ "host": "#{host}", "port": "#{port}", "protocol": "#{protocol}", "query": "#{query}", "path":"/#{path}","statusCode":"HTTP_302"}}'
+#    alb.ingress.kubernetes.io/actions.app-redirect: '{"type":"redirect", "redirectConfig":{ "host": "#{host}", "port": "#{port}", "protocol": "#{protocol}", "query": "#{query}", "path":"/#{path}","statusCode":"HTTP_302"}}'
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+#          - path: /kibana/*
+#            pathType: Prefix
+#            backend:
+#              serviceName: kibana-redirect
+#              servicePort: use-annotation
+#          - path: /app/*
+#            pathType: Prefix
+#            backend:
+#              serviceName: app-redirect
+#              servicePort: use-annotation
+          - path: *
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana-service
+                port:
+                  number: 5601
