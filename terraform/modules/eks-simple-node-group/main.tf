@@ -1,7 +1,4 @@
 locals {
-  tag_product = var.tags['Product']
-  tag_environment = var.tags['Environment']
-
   worker_node_policy = [
     "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
@@ -30,17 +27,17 @@ resource "tls_private_key" "ssh_keys" {
 
 resource "aws_s3_object" "private_key" {
   bucket = "asmt-aws-terraform-state-bucket-${data.aws_caller_identity.current.account_id}"
-  key    = "${local.tag_environment}/eks/private_ssh_key"
+  key    = "${var.environment}/eks/private_ssh_key"
 
   content = tls_private_key.ssh_keys.private_key_pem
 }
 
 resource "aws_key_pair" "lt_keypair" {
-  key_name   = "${local.tag_product}-${local.tag_environment}-eks-lt-keypair"
+  key_name   = "${var.product}-${var.environment}-eks-lt-keypair"
   public_key = tls_private_key.ssh_keys.public_key_openssh
 
   tags = merge(
-    { Name = "${local.tag_product}-${local.tag_environment}-eks-lt-keypair" },
+    { Name = "${var.product}-${var.environment}-eks-lt-keypair" },
     var.tags
   )
 }
