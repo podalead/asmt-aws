@@ -51,7 +51,7 @@ locals {
     service_ports_tcp = {
       cidr_blocks = [var.eks_service_ipv4_cidr]
       from_port   = 1000
-      to_port     = 65555
+      to_port     = 65535
       protocol    = "tcp"
       type        = "ingress"
     }
