@@ -1,9 +1,9 @@
 locals {
-  worker_node_policy = [
+  worker_node_policy = toset([
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  ]
+  ])
 }
 
 data "aws_caller_identity" "current" {}
