@@ -111,13 +111,13 @@ locals {
     mapRoles = yamlencode(concat(
       [
         for role_arn in local.node_iam_role_arns_non_windows : {
-        rolearn  = role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups   = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
+          rolearn  = role_arn
+          username = "system:node:{{EC2PrivateDNSName}}"
+          groups = [
+            "system:bootstrappers",
+            "system:nodes",
+          ]
+        }
       ],
       var.aws_auth_roles
     ))
