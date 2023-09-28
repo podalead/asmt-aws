@@ -5,7 +5,7 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   version = var.eks_cluster_version
 
   kubernetes_network_config {
-    ip_family = var.eks_ip_family
+    ip_family         = var.eks_ip_family
     service_ipv4_cidr = var.eks_service_ipv4_cidr
   }
 
@@ -15,6 +15,7 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
     endpoint_public_access  = true
     endpoint_private_access = false
   }
+  enabled_cluster_log_types = var.eks_log_types
 
   tags = merge(
     { Name = local.eks_cluster_name },
@@ -27,13 +28,34 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   ]
 }
 
-#resource "aws_eks_addon" "asmt_eks_cluster_addon" {
-#  cluster_name = aws_eks_cluster.asmt_eks_cluster.name
-#  addon_name   = var.eks_addon_name
-#}
+resource "aws_iam_policy" "logs_policy" {
+  name   = local.eks_cluster_log_policy_name
+  policy = jsondecode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        "Resource" : [
+          "arn:aws:logs:*:*:*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eks_log_policy_attachment" {
+  role       = aws_iam_role.asmt_eks_cluster_role.name
+  policy_arn = aws_iam_policy.logs_policy.arn
+}
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
-  name = local.eks_cluster_role_name
+  name               = local.eks_cluster_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_eks_policy.json
 
   tags = merge(
@@ -56,11 +78,57 @@ resource "aws_security_group" "asmt_eks_sg" {
 
   tags = merge(
     {
-      Name = local.eks_cluster_sg_name
+      Name                                              = local.eks_cluster_sg_name
       "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
     },
     local.default_tags
   )
+}
+
+resource "aws_security_group" "asmt_alb_sg" {
+  name   = local.alb_security_group_name
+  vpc_id = local.vpc_id
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+  }
+
+  dynamic "ingress" {
+    for_each = {
+      http         = 80
+      https        = 443
+      http_second  = 8080
+      https_second = 8443
+    }
+
+    content {
+      cidr_blocks = ["0.0.0.0/0"]
+      protocol    = "tcp"
+      from_port   = ingress.value
+      to_port     = ingress.value
+    }
+  }
+
+  tags = merge(
+    {
+      Name                                              = local.alb_security_group_name
+      "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
+    },
+    local.default_tags
+  )
+}
+
+resource "aws_security_group_rule" "asmt_eks_sg_rule_ingress_alb" {
+  security_group_id = aws_security_group.asmt_eks_sg.id
+
+  source_security_group_id = aws_security_group.asmt_alb_sg.id
+  from_port   = 1000
+  to_port     = 65535
+  protocol    = "TCP"
+  type        = "ingress"
 }
 
 resource "aws_security_group_rule" "asmt_eks_sg_rule" {
@@ -68,11 +136,11 @@ resource "aws_security_group_rule" "asmt_eks_sg_rule" {
 
   security_group_id = aws_security_group.asmt_eks_sg.id
 
-  cidr_blocks       = each.value.cidr_blocks
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  protocol          = each.value.protocol
-  type              = each.value.type
+  cidr_blocks = each.value.cidr_blocks
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
+  protocol    = each.value.protocol
+  type        = each.value.type
 }
 
 ################################################################################
@@ -90,10 +158,11 @@ locals {
 
   aws_auth_configmap_data = {
     mapRoles = yamlencode(concat(
-      [for role_arn in local.node_iam_role_arns_non_windows : {
+      [
+        for role_arn in local.node_iam_role_arns_non_windows : {
         rolearn  = role_arn
         username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
+        groups   = [
           "system:bootstrappers",
           "system:nodes",
         ]

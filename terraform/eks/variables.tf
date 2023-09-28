@@ -54,10 +54,10 @@ variable "eks_service_ipv4_cidr" {
   default = "192.168.1.0/24"
 }
 
-#variable "eks_addon_name" {
-#  type = string
-#  default = "vpc-cni"
-#}
+variable "eks_log_types" {
+  type = list(string)
+  default = []
+}
 
 variable "eks_addon_lb_version" {
   type = string

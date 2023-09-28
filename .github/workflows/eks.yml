@@ -56,9 +56,6 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
 
-#      - name: Install Helm
-#        uses: azure/setup-helm@v3
-
       - name: Terraform init
         id: init
         working-directory: ${{ env.WORK_DIR }}
