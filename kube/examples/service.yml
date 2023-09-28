@@ -4,10 +4,10 @@ metadata:
   namespace: asmt-aws
   name: asmt-aws-test-service
 spec:
+  type: NodePort
   ports:
     - port: 9000
       targetPort: 9000
       protocol: TCP
-  type: NodePort
   selector:
     app.kubernetes.io/name: asmt-aws-test-app

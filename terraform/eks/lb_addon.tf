@@ -12,6 +12,11 @@ resource "aws_iam_policy" "load-balancer-controller" {
   description = "Load Balancer Controller add-on for EKS"
 }
 
+resource "aws_iam_role_policy_attachment" "lb_policies_permissions" {
+  policy_arn = aws_iam_policy.load-balancer-controller.arn
+  role       = aws_iam_role.aws-node.name
+}
+
 data "aws_iam_policy_document" "eks_lb_trust_policy" {
   version = "2012-10-17"
 
