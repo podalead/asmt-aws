@@ -24,14 +24,27 @@ variable "tag_cost_code" {
   description = "Code that use for calculation product expenses"
 }
 
-### REMOTE STATE ###
-variable "vpc_remote_state_config" {
-  type = object({
-    region = string
-    bucket = string
-    key    = string
-  })
+### VPC ###
+variable "vpc_cidr" {
+  type = string
+  default = "10.0.0.0/16"
 }
+
+variable "public_subnet_cidrs" {
+  type = list(string)
+  default = []
+}
+
+variable "private_subnet_cidrs" {
+  type = list(string)
+  default = []
+}
+
+variable "azs" {
+  type = list(string)
+  default = []
+}
+
 
 ### NODE GROUP ###
 variable "iam_role_additional_policies" {

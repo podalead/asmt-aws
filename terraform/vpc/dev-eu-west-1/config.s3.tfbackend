@@ -1,3 +1,0 @@
-region = "eu-west-1"
-bucket = "asmt-aws-terraform-state-bucket-270930892402"
-key    = "dev/eks/vpc.tfstate"

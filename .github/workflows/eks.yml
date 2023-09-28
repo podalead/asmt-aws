@@ -29,8 +29,8 @@ on:
         type: choice
         description: "Select provision part"
         required: true
+        default: 'eks'
         options:
-          - vpc
           - eks
 
 jobs:

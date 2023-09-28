@@ -6,7 +6,11 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.23.0"
+      version = "~> 2.23.0"
+    }
+    helm = {
+      source = "hashicorp/helm"
+      version = "~> 2.11.0"
     }
   }
 
@@ -17,24 +21,24 @@ provider "aws" {}
 
 provider "helm" {
   kubernetes {
-    host                   = aws_eks_cluster.asmt_eks_cluster.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.asmt_eks_cluster.certificate_authority.0.data)
+    host                   = module.eks_master.eks_cluster_host
+    cluster_ca_certificate = base64decode(module.eks_master.eks_cluster_ca_certificate)
 
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
-      args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.asmt_eks_cluster.name]
+      args        = ["eks", "get-token", "--cluster-name", module.eks_master.eks_cluster_name]
       command     = "aws"
     }
   }
 }
 
 provider "kubernetes" {
-  host                   = aws_eks_cluster.asmt_eks_cluster.endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.asmt_eks_cluster.certificate_authority.0.data)
+  host                   = module.eks_master.eks_cluster_host
+  cluster_ca_certificate = base64decode(module.eks_master.eks_cluster_ca_certificate)
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.asmt_eks_cluster.name]
+    args        = ["eks", "get-token", "--cluster-name", module.eks_master.eks_cluster_name]
     command     = "aws"
   }
 }

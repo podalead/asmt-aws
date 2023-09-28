@@ -1,24 +1,82 @@
+locals {
+  master_node_policy = [
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  ]
+
+  eks_sg_rules = {
+    https_ingress_tcp = {
+      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+    dns_ingress_tcp = {
+      cidr_blocks = [var.eks_service_ipv4_cidr]
+      from_port   = 53
+      to_port     = 53
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+    service_ports_tcp = {
+      cidr_blocks = [var.eks_service_ipv4_cidr]
+      from_port   = 1000
+      to_port     = 65535
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+    #    http_ingress = {
+    #      cidr_blocks = ["0.0.0.0/0"]
+    #      from_port   = 80
+    #      to_port     = 80
+    #      protocol    = "-1"
+    #      type        = "ingress"
+    #    }
+    egress_all = {
+      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      type        = "egress"
+    }
+  }
+}
+
+data "aws_iam_policy_document" "assume_eks_policy" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
 resource "aws_eks_cluster" "asmt_eks_cluster" {
-  name     = local.eks_cluster_name
+  name     = var.eks_cluster_name
   role_arn = aws_iam_role.asmt_eks_cluster_role.arn
 
   version = var.eks_cluster_version
 
   kubernetes_network_config {
-    ip_family = var.eks_ip_family
+    ip_family         = var.eks_ip_family
     service_ipv4_cidr = var.eks_service_ipv4_cidr
   }
 
   vpc_config {
-    subnet_ids              = local.private_subnet_ids
+    subnet_ids              = var.eks_private_subnet_ids
     security_group_ids      = [aws_security_group.asmt_eks_sg.id]
     endpoint_public_access  = true
     endpoint_private_access = false
   }
+  enabled_cluster_log_types = var.eks_log_types
 
   tags = merge(
-    { Name = local.eks_cluster_name },
-    local.default_tags
+    { Name = var.eks_cluster_name },
+    var.tags
   )
 
   depends_on = [
@@ -27,108 +85,71 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   ]
 }
 
-#resource "aws_eks_addon" "asmt_eks_cluster_addon" {
-#  cluster_name = aws_eks_cluster.asmt_eks_cluster.name
-#  addon_name   = var.eks_addon_name
-#}
+resource "aws_iam_policy" "logs_policy" {
+  name   = var.eks_cluster_log_policy_name
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        "Resource" : [
+          "arn:aws:logs:*:*:*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "logs_policy" {
+  role       = aws_iam_role.asmt_eks_cluster_role.name
+  policy_arn = aws_iam_policy.logs_policy.arn
+}
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
-  name = local.eks_cluster_role_name
+  name               = var.eks_cluster_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_eks_policy.json
 
   tags = merge(
-    { Name = local.eks_cluster_role_name },
-    local.default_tags
+    { Name = var.eks_cluster_role_name },
+    var.tags
   )
 }
 
 resource "aws_iam_role_policy_attachment" "master_node_policy_attachments" {
-  for_each = local.master_node_policy
+  for_each = toset(local.master_node_policy)
 
   policy_arn = each.value
   role       = aws_iam_role.asmt_eks_cluster_role.name
 }
 
 resource "aws_security_group" "asmt_eks_sg" {
-  name = local.eks_cluster_sg_name
+  name = var.eks_cluster_sg_name
 
-  vpc_id = local.vpc_id
+  vpc_id = var.vpc_id
 
   tags = merge(
     {
-      Name = local.eks_cluster_sg_name
-      "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
+      Name                                            = var.eks_cluster_sg_name
+      "kubernetes.io/cluster/${var.eks_cluster_name}" = "owned"
     },
-    local.default_tags
+    var.tags
   )
 }
 
 resource "aws_security_group_rule" "asmt_eks_sg_rule" {
-  for_each = local.eks_seg_rules
+  for_each = local.eks_sg_rules
 
   security_group_id = aws_security_group.asmt_eks_sg.id
 
-  cidr_blocks       = each.value.cidr_blocks
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  protocol          = each.value.protocol
-  type              = each.value.type
+  cidr_blocks = each.value.cidr_blocks
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
+  protocol    = each.value.protocol
+  type        = each.value.type
 }
-
-################################################################################
-# aws-auth configmap
-################################################################################
-locals {
-  node_iam_role_arns_non_windows = distinct(
-    compact(
-      concat(
-        [aws_iam_role.asmt_eks_node_group_role.arn],
-        var.aws_auth_node_iam_role_arns_non_windows,
-      )
-    )
-  )
-
-  aws_auth_configmap_data = {
-    mapRoles = yamlencode(concat(
-      [for role_arn in local.node_iam_role_arns_non_windows : {
-        rolearn  = role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }
-      ],
-      var.aws_auth_roles
-    ))
-    mapUsers    = yamlencode(var.aws_auth_users)
-    mapAccounts = yamlencode(var.aws_auth_accounts)
-  }
-}
-
-resource "kubernetes_config_map" "aws_auth" {
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-
-  data = local.aws_auth_configmap_data
-
-  lifecycle {
-    ignore_changes = [data, metadata[0].labels, metadata[0].annotations]
-  }
-}
-
-resource "kubernetes_config_map_v1_data" "aws_auth" {
-  force = true
-
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-
-  data = local.aws_auth_configmap_data
-
-  depends_on = [kubernetes_config_map.aws_auth]
-}
-
