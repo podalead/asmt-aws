@@ -7,8 +7,8 @@ data "http" "aws-lb-controller-policy" {
 }
 
 resource "aws_iam_policy" "load-balancer-controller" {
-  name = "AWSLoadBalancerControllerIAMPolicy"
-  policy = tostring(data.http.aws-lb-controller-policy.response_body)
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  policy      = tostring(data.http.aws-lb-controller-policy.response_body)
   description = "Load Balancer Controller add-on for EKS"
 }
 
@@ -40,22 +40,22 @@ data "aws_iam_policy_document" "eks_lb_trust_policy" {
 resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
   metadata {
     labels = {
-      "app.kubernetes.io/component": "controller"
-      "app.kubernetes.io/name": "aws-load-balancer-controller"
+      "app.kubernetes.io/component" : "controller"
+      "app.kubernetes.io/name" : "aws-load-balancer-controller"
     }
-    name = "aws-load-balancer-controller"
-    namespace = "kube-system"
+    name        = "aws-load-balancer-controller"
+    namespace   = "kube-system"
     annotations = {
-      "eks.amazonaws.com/role-arn": aws_iam_role.aws-node.arn
+      "eks.amazonaws.com/role-arn" : aws_iam_role.aws-node.arn
     }
   }
 }
 
 resource "helm_release" "eks_cluster_lb_controller" {
-  name  = "aws-load-balancer-controller"
+  name = "aws-load-balancer-controller"
 
   repository = "https://aws.github.io/eks-charts"
-  chart = "aws-load-balancer-controller"
+  chart      = "aws-load-balancer-controller"
 
   namespace = "kube-system"
 

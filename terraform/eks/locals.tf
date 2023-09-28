@@ -1,17 +1,17 @@
 locals {
-  eks_basename = "${var.tag_product}-${var.tag_environment}"
-  eks_cluster_name = "${local.eks_basename}-eks"
-  eks_cluster_role_name = "${local.eks_basename}-eks-role"
-  eks_cluster_idp_role_name = "${local.eks_basename}-oidc-provider-role"
-  eks_cluster_idp_name = "${local.eks_basename}-oidc-provider"
-  eks_cluster_sg_name = "${local.eks_basename}-eks-sg"
-  eks_node_group_name = "${local.eks_basename}-eks-node-group"
-  eks_node_group_role_name = "${local.eks_basename}-eks-node-group-iam-role"
-  alb_security_group_name = "${local.eks_basename}-alb-sg"
+  eks_basename                = "${var.tag_product}-${var.tag_environment}"
+  eks_cluster_name            = "${local.eks_basename}-eks"
+  eks_cluster_role_name       = "${local.eks_basename}-eks-role"
+  eks_cluster_idp_role_name   = "${local.eks_basename}-oidc-provider-role"
+  eks_cluster_idp_name        = "${local.eks_basename}-oidc-provider"
+  eks_cluster_sg_name         = "${local.eks_basename}-eks-sg"
+  eks_node_group_name         = "${local.eks_basename}-eks-node-group"
+  eks_node_group_role_name    = "${local.eks_basename}-eks-node-group-iam-role"
+  alb_security_group_name     = "${local.eks_basename}-alb-sg"
   eks_cluster_log_policy_name = "${local.eks_basename}-log-policy"
 
   eks_cluster_oidc_issuer = aws_eks_cluster.asmt_eks_cluster.identity[0].oidc[0].issuer
-  oidc_uri = replace(aws_iam_openid_connect_provider.demo.url, "https://", "")
+  oidc_uri                = replace(aws_iam_openid_connect_provider.demo.url, "https://", "")
 
   default_tags = {
     Contact     = var.tag_contact
@@ -55,13 +55,13 @@ locals {
       protocol    = "tcp"
       type        = "ingress"
     }
-#    http_ingress = {
-#      cidr_blocks = ["0.0.0.0/0"]
-#      from_port   = 80
-#      to_port     = 80
-#      protocol    = "-1"
-#      type        = "ingress"
-#    }
+    #    http_ingress = {
+    #      cidr_blocks = ["0.0.0.0/0"]
+    #      from_port   = 80
+    #      to_port     = 80
+    #      protocol    = "-1"
+    #      type        = "ingress"
+    #    }
     egress_all = {
       cidr_blocks = ["0.0.0.0/0"]
       from_port   = 0

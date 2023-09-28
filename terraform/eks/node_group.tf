@@ -48,12 +48,12 @@ resource "aws_key_pair" "lt_keypair" {
 }
 
 resource "aws_eks_node_group" "asmt_eks_eks_managed_node_group" {
-  node_group_name      = local.eks_node_group_name
-  cluster_name         = aws_eks_cluster.asmt_eks_cluster.name
-  node_role_arn        = aws_iam_role.asmt_eks_node_group_role.arn
-  subnet_ids           = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
-  instance_types       = ["t3a.small", "t3.small"]
-  disk_size            = "30"
+  node_group_name = local.eks_node_group_name
+  cluster_name    = aws_eks_cluster.asmt_eks_cluster.name
+  node_role_arn   = aws_iam_role.asmt_eks_node_group_role.arn
+  subnet_ids      = data.terraform_remote_state.vpc.outputs.vpc_private_subnet_ids
+  instance_types  = ["t3a.small", "t3.small"]
+  disk_size       = "30"
 
   scaling_config {
     min_size     = 1
