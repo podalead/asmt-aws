@@ -9,6 +9,9 @@ locals {
   eks_cluster_idp_name        = "${local.eks_basename}-oidc-provider"
   eks_cluster_log_policy_name = "${local.eks_basename}-log-policy"
 
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
+  vpc_private_subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnet_ids
+
   default_tags = {
     Contact     = var.tag_contact
     Cost_Code   = var.tag_cost_code
@@ -17,28 +20,20 @@ locals {
   }
 }
 
-module "vpc" {
-  source = "../modules/vpc"
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
 
-  vpc_cidr = var.vpc_cidr
-  azs      = var.azs
-
-  private_subnet_cidrs = var.private_subnet_cidrs
-  public_subnet_cidrs  = var.public_subnet_cidrs
-
-  product     = var.tag_product
-  environment = var.tag_environment
-  tags        = local.default_tags
+  config = var.vpc_remote_state_config
 }
 
 module "eks_master" {
   source = "../modules/eks-cluster"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = local.vpc_id
 
   eks_cluster_name       = local.eks_cluster_name
   eks_cluster_version    = var.eks_cluster_version
   eks_service_ipv4_cidr  = var.eks_service_ipv4_cidr
-  eks_private_subnet_ids = module.vpc.vpc_private_subnet_ids
+  eks_private_subnet_ids = local.vpc_private_subnet_ids
 
   eks_cluster_sg_name         = local.eks_cluster_sg_name
   eks_cluster_role_name       = local.eks_cluster_role_name
@@ -52,7 +47,7 @@ module "eks_simple_node_group" {
 
   eks_cluster_name       = module.eks_master.eks_cluster_name
   eks_node_group_name    = local.eks_node_group_name
-  vpc_private_subnet_ids = module.vpc.vpc_private_subnet_ids
+  vpc_private_subnet_ids = local.vpc_private_subnet_ids
 
   eks_node_group_role_name = local.eks_node_group_role_name
 
