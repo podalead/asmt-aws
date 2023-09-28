@@ -20,7 +20,8 @@ eks_service_ipv4_cidr  = "192.168.1.0/24"
 eks_addon_name         = "vpc-cni"
 eks_node_instance_type = "t3a.small"
 eks_log_types          = ["api", "audit", "controllerManager"]
-aws_auth_roles         = [
+
+aws_auth_roles = [
   {
     groups : ["system:masters"],
     rolearn : "arn:aws:iam::270930892402:role/github-connection-provider-role"
@@ -35,6 +36,3 @@ aws_auth_roles         = [
 aws_auth_accounts = [
   270930892402
 ]
-
-### NODE GROUP ###
-iam_role_additional_policies = []
