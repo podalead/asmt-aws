@@ -13,7 +13,7 @@ vpc_remote_state_config = {
 }
 
 ### EKS ###
-eks_cluster_version    = "1.27"
+eks_cluster_version    = "1.28"
 eks_addon_lb_version   = "2.5.4"
 eks_ip_family          = "ipv4"
 eks_service_ipv4_cidr  = "192.168.1.0/24"
