@@ -28,8 +28,9 @@ resource "aws_eks_cluster" "asmt_eks_cluster" {
   ]
 }
 
-resource "aws_iam_policy" "logs_policy" {
+resource "aws_iam_role_policy" "logs_policy" {
   name   = local.eks_cluster_log_policy_name
+  role   = aws_iam_role.asmt_eks_cluster_role.name
   policy = jsondecode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -47,11 +48,6 @@ resource "aws_iam_policy" "logs_policy" {
       }
     ]
   })
-}
-
-resource "aws_iam_role_policy_attachment" "eks_log_policy_attachment" {
-  role       = aws_iam_role.asmt_eks_cluster_role.name
-  policy_arn = aws_iam_policy.logs_policy.arn
 }
 
 resource "aws_iam_role" "asmt_eks_cluster_role" {
@@ -125,10 +121,10 @@ resource "aws_security_group_rule" "asmt_eks_sg_rule_ingress_alb" {
   security_group_id = aws_security_group.asmt_eks_sg.id
 
   source_security_group_id = aws_security_group.asmt_alb_sg.id
-  from_port   = 1000
-  to_port     = 65535
-  protocol    = "TCP"
-  type        = "ingress"
+  from_port                = 1000
+  to_port                  = 65535
+  protocol                 = "TCP"
+  type                     = "ingress"
 }
 
 resource "aws_security_group_rule" "asmt_eks_sg_rule" {
