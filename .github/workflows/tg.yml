@@ -1,0 +1,58 @@
+name: 'Terragrunt/non-prod/eu-west-1/dev/apply'
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: "Select env to where need to deploy"
+        required: true
+        default: "dev"
+        options:
+          - dev
+      state:
+        type: choice
+        description: "Choose apply or destroy infra"
+        required: true
+        default: "apply"
+        options:
+          - apply
+          - destroy
+      region:
+        type: choice
+        description: "Choose infra region"
+        required: true
+        default: "eu-west-1"
+        options:
+          - eu-west-1
+
+jobs:
+  terragrunt:
+    name: 'Terragrunt'
+    runs-on: ubuntu-latest
+    environment: "aws-eks-dev"
+    env:
+      TF_VERSION: '1.5.7'
+      TG_VERSION: 'v0.51.6'
+      ACCOUNT_NAME: 'non-prod'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials for account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          aws-region: ${{ github.event.inputs.region }}
+
+      - name: Terragrunt setup and apply
+        uses: gruntwork-io/terragrunt-action@v1
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ./terragrunt/${{ env.ACCOUNT_NAME }}/${{ github.event.inputs.region }}/${{ github.event.inputs.env }}
+          tg_command: "${{ github.event.inputs.state }}"
