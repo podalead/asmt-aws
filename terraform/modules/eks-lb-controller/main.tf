@@ -1,5 +1,5 @@
 data "http" "aws-lb-controller-policy" {
-  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v${var.eks_addon_lb_version}/docs/install/iam_policy.json"
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v${var.eks_lb_addon_version}/docs/install/iam_policy.json"
 
   request_headers = {
     Accept = "application/json"
@@ -10,36 +10,16 @@ resource "aws_iam_policy" "load-balancer-controller" {
   name        = "AWSLoadBalancerControllerIAMPolicy"
   policy      = tostring(data.http.aws-lb-controller-policy.response_body)
   description = "Load Balancer Controller add-on for EKS"
+
+  tags = merge(
+    { Name = "${var.eks_cluster_name}-lb-controller-policy" },
+    var.tags
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "lb_policies_permissions" {
+  role       = var.eks_oidc_role_name
   policy_arn = aws_iam_policy.load-balancer-controller.arn
-  role       = aws_iam_role.aws-node.name
-}
-
-data "aws_iam_policy_document" "eks_lb_trust_policy" {
-  version = "2012-10-17"
-
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.demo.arn]
-    }
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "${local.oidc_uri}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${local.oidc_uri}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
-    }
-  }
 }
 
 resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
@@ -51,7 +31,7 @@ resource "kubernetes_service_account_v1" "kube_serviceaccount_lb" {
     name        = "aws-load-balancer-controller"
     namespace   = "kube-system"
     annotations = {
-      "eks.amazonaws.com/role-arn" : aws_iam_role.aws-node.arn
+      "eks.amazonaws.com/role-arn" : var.eks_oidc_role_arn
     }
   }
 }
@@ -66,7 +46,7 @@ resource "helm_release" "eks_cluster_lb_controller" {
 
   set {
     name  = "clusterName"
-    value = local.eks_cluster_name
+    value = var.eks_cluster_name
   }
 
   set {

@@ -29,6 +29,7 @@ on:
         type: choice
         description: "Select provision part"
         required: true
+        default: 'vpc'
         options:
           - vpc
           - eks
@@ -55,6 +56,11 @@ jobs:
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform fmt
+        id: fmt
+        working-directory: ${{ env.WORK_DIR }}
+        run: terraform fmt -recursive -check ./
 
       - name: Terraform init
         id: init

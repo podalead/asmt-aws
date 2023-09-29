@@ -24,11 +24,11 @@ variable "tag_cost_code" {
   description = "Code that use for calculation product expenses"
 }
 
-### REMOTE STATE ###
+### VPC STATE ###
 variable "vpc_remote_state_config" {
   type = object({
-    region = string
     bucket = string
+    region = string
     key    = string
   })
 }
