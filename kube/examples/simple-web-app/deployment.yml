@@ -24,4 +24,3 @@ spec:
           ports:
             - name: app-port
               containerPort: 9000
-
