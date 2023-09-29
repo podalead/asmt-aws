@@ -7,7 +7,7 @@ output "eks_host" {
 }
 
 output "eks_ca_cert_base64" {
-  value = module.eks_master.eks_cluster_ca_certificate
+  value     = module.eks_master.eks_cluster_ca_certificate
   sensitive = true
 }
 
