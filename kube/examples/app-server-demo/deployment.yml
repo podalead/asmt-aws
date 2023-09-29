@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asmt-aws-app-server-deployment
+  namespace: asmt-aws
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: asmt-aws-app-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: asmt-aws-app-server
+    spec:
+      containers:
+        - name: app-server-demo
+          image: heryv1m/app-server-demo:v1.1.0
+          ports:
+            - name: app-server-port
+              containerPort: 8080
+
