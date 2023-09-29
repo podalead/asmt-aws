@@ -1,0 +1,8 @@
+1. Start from a single file Python mini HTTP server.
+   The source code is located here: https://raw.githubusercontent.com/volk1234/kubernetes-challenge/master/main.py
+2. Run it locally.
+3. Dockerize it.
+4. Run it locally through Docker.
+5. Deploy it to k8s with a regular k8s Deployment.
+6. Expose to the outside world.
+7. Modify the application code so it waits 30 seconds before starting to serve the webpage.
