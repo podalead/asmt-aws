@@ -1,5 +1,5 @@
 # Assessment for AWS EKS
-![AWS EKS provision](https://github.com/podalead/asmt-aws-eks/actions/workflows/eks,yml/badge.svg)
+![AWS EKS provision](https://github.com/podalead/asmt-aws-eks/actions/workflows/eks.yml/badge.svg)
 
 ## Infra
 ### Resources and EKS components
