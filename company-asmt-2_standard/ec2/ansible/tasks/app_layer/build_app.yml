@@ -1,0 +1,32 @@
+- name: "Create dirs"
+  file:
+    path: "{{ dir }}"
+    state: directory
+
+- name: "Clone app to folder"
+  file:
+    path: "{{ dir }}"
+    state: absent
+
+- name: "Clone app to folder"
+  git:
+    repo: "{{ git_app_repo }}"
+    dest: "{{ dir }}"
+
+- name: "Clean old app config"
+  file:
+    path: "{{ app_resourse_path }}/application.yml"
+    state: absent
+
+- name: "Create application config file"
+  template:
+    src: "{{ project_dir_profile }}/{{ profile }}/app/application.yml.j2"
+    dest: "{{ app_resourse_path }}/application.yml"
+
+- name: "Build container"
+  docker_image:
+    name: "{{ app_image_repo }}/{{ app_image_name }}"
+    build:
+      path: "{{ dir }}"
+    tag: "{{ app_tag }}"
+    source: build

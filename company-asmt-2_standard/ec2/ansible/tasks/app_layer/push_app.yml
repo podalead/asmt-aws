@@ -1,0 +1,19 @@
+- name: "Log into DockerHub"
+  docker_login:
+    username: "{{ docker_login }}"
+    password: "{{ docker_pass }}"
+
+#- name: "Push container to hub repo"
+#  docker_image:
+#    name: "{{ full_spec_repo_name }}"
+#    repository: "{{ full_spec_repo_name }}"
+#    push: yes
+#    source: local
+
+- name: "Push container to hub repo"
+  shell:
+    cmd: "docker push {{ full_spec_repo_name }}"
+
+- name: "Log out of DockerHub"
+  docker_login:
+    state: absent

@@ -1,0 +1,27 @@
+- name: "Create a challenge for using a account key file"
+  acme_certificate:
+    account_key_src: "{{ private_key_path }}"
+    account_email: "{{ account_email }}"
+    select_crypto_backend: cryptography
+    acme_version: 2
+    csr: "{{ csr_path }}"
+    dest: "{{ crt_path }}"
+    challenge: "dns-01"
+    acme_directory: "{{ acme_directory }}"
+    # Renew if the certificate is at least 30 days old
+    remaining_days: 60
+    terms_agreed: true
+  register: sample_com_challenge
+
+- name: "AAA"
+  debug: "{{ sample_com_challenge.failed }}"
+
+- name: "Create record for wildcard"
+  route53:
+    zone: "{{ dns_name }}"
+    record: "{{ sample_com_challenge.challenge_data[dns_name]['dns-01'].record }}"
+    type: "TXT"
+    ttl: 60
+    # Note: route53 requires TXT entries to be enclosed in quotes
+    value: "{{ sample_com_challenge.challenge_data[dns_name]['dns-01'].resource_value }}"
+#  when: sample_com_challenge is changed

@@ -1,0 +1,7 @@
+- name: "Upload a self-signed certificate"
+  aws_acm:
+    certificate: "{{ lookup('file', crt_path) }}"
+    privateKey: "{{ lookup('file', private_key_path) }}"
+    name_tag: "{{ dns_name }}"
+    region: "{{ aws_region }}"
+    state: present

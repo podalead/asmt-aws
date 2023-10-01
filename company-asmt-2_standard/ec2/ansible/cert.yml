@@ -1,0 +1,13 @@
+- hosts: "localhost"
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+  gather_facts: yes
+  vars_files:
+    - "{{ project_dir_root }}/ansible/group_vars/global_var.yml"
+    - "{{ project_dir_root }}/ansible/group_vars/certs_vars.yml"
+
+  tasks:
+    - include: "{{ project_dir_ansible }}/tasks/cert/create_new_cert.yml"
+#    - include: "{{ project_dir_ansible }}/tasks/cert/load_new_cert.yml"
+    - include: "{{ project_dir_ansible }}/tasks/cert/update_challenge.yml"

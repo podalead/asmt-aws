@@ -1,0 +1,6 @@
+docker_key: "https://download.docker.com/linux/ubuntu/gpg"
+docker_repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ hostvars[inventory_hostname].ansible_distribution_release }} stable"
+docker_apt_package:
+  - "docker-ce"
+  - "docker-ce-cli"
+  - "containerd.io"

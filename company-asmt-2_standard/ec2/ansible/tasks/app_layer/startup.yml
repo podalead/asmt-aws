@@ -1,0 +1,18 @@
+# Docker network
+- name: "Docker network"
+  docker_network:
+    name: "{{ network_name }}"
+
+# Docker start configuration
+- name: "Container configuration"
+  docker_container:
+    name: "{{ container_name }}"
+    hostname: "{{ container_name }}"
+    image: "{{ full_spec_repo_name }}"
+    state: started
+    ports:
+      - "{{ app_port }}:{{ app_port }}"
+    networks_cli_compatible: yes
+    network_mode: "{{ network_mode }}"
+    networks:
+      - name: "{{ network_name }}"

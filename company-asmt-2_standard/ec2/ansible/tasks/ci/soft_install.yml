@@ -1,0 +1,22 @@
+- name: "Install simple packages"
+  apt:
+    name: "{{ simple_apt_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Add an Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  loop: "{{ apt_keys | flatten }}"
+
+- name: "Add repositories"
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  loop: "{{ apt_pack_repos | flatten }}"
+
+- name: "Install terraform switcher"
+  shell: "curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash"
+  when: terraform_need
+

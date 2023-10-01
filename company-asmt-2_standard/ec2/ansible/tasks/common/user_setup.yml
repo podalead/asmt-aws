@@ -1,0 +1,43 @@
+- name: "Scan dir on existing service public keys"
+  find:
+    paths: "{{ src_cred }}/ssh/service"
+    patterns: "*.pub"
+    recurse: yes
+  register: find_result
+  become: no
+  delegate_to: 127.0.0.1
+
+- name: Create group admin exists
+  group:
+    name: "admin"
+    state: present
+
+- name: "Create service user account"
+  user:
+    name: "{{ item.path | basename | replace('.pub','') }}"
+    groups: ["admin"]
+    shell: "/bin/bash"
+    state: present
+    append: yes
+  with_items: "{{ find_result.files }}"
+
+- name: "Add authorized service keys"
+  authorized_key:
+    user: "{{ item.path | basename | replace('.pub','') }}"
+    key: "{{ lookup('file', '{{ item.path }}') }}"
+  with_items: "{{ find_result.files }}"
+
+# Add permission to user
+- name: "Add permission to user"
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%admin ALL='
+    line: '%admin ALL=(ALL) NOPASSWD: ALL'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: "Create project dir"
+  file:
+    path: "{{ project_dir_home }}"
+    state: directory
+    mode: '0744'

@@ -1,0 +1,12 @@
+- hosts: "{{ host }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: yes
+
+  vars_files:
+    - "{{ project_dir_root }}/ansible/group_vars/global_var.yml"
+    - "{{ project_dir_root }}/ansible/group_vars/bastion/bastion_vars.yml"
+
+  tasks:
+    - include: "{{ project_dir_ansible }}/tasks/common/user_setup.yml"

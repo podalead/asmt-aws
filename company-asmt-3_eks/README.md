@@ -19,7 +19,7 @@
  - Installed AWS load balancer controller
 
 ### Diagram
-![Infra diagram](./docs/asmt-aws-eks-infra.svg)
+![Infra diagram](docs/asmt-aws-eks-infra.svg)
 
 
 

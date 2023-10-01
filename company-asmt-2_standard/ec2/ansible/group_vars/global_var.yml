@@ -1,0 +1,9 @@
+service_user: "bilbo"
+project_dir_profile: "{{ project_dir_root }}/profiles"
+project_dir_ansible: "{{ project_dir_root }}/ansible"
+project_dir_home: "/home/{{ service_user }}/project"
+
+src_cred: "{{ project_dir_profile }}/{{ profile }}"
+
+aws_region: "eu-central-1"
+dns_name: "testerization.cf"

@@ -1,0 +1,15 @@
+- hosts: "{{ host }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: yes
+
+  vars_files:
+    - "{{ project_dir_root }}/ansible/group_vars/global_var.yml"
+    - "{{ project_dir_root }}/ansible/group_vars/proxy/proxy_vars.yml"
+
+  tasks:
+    - include: "{{ project_dir_ansible }}/tasks/common/apt_pack_install.yml"
+#    - include: "{{ project_dir_ansible }}/tasks/proxy_layer/install_certbot.yml"
+    - include: "{{ project_dir_ansible }}/tasks/proxy_layer/configure.yml"
+#    - include: "{{ project_dir_ansible }}/tasks/proxy_layer/ssl.yml"

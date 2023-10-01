@@ -1,0 +1,6 @@
+apt_packages:
+  - "python3-pip"
+  - "python-pip"
+
+pip_packages:
+  - "docker-py"

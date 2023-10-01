@@ -1,0 +1,10 @@
+private_key_path: "{{ project_dir_profile }}/{{ profile }}/ssl/key.pem"
+private_key_password: "hey_amigo_muchacho!"
+
+csr_path: "{{ project_dir_profile }}/{{ profile }}/ssl/csr.pem"
+crt_path: "{{ project_dir_profile }}/{{ profile }}/ssl/crt.pem"
+
+account_key_path: "{{ project_dir_profile }}/{{ profile }}/ssl/key.pem"
+account_email: "podalead@gmail.com"
+#acme_directory: "https://acme-v01.api.letsencrypt.org/directory"
+acme_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"

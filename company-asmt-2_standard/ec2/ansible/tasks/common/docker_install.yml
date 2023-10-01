@@ -1,0 +1,20 @@
+- name: Add an Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: "{{ docker_key }}"
+    state: present
+
+- name: "Add repositories"
+  apt_repository:
+    repo: "{{ docker_repo }}"
+    state: present
+
+- name: "Install a apt of packages"
+  apt:
+    name: "{{ docker_apt_package }}"
+    state: present
+    update_cache: yes
+
+- name: "Ensure service is enabled"
+  service:
+    name: "docker"
+    state: "restarted"

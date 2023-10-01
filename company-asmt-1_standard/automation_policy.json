@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AWS access",
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetSessionToken",
+        "sts:GetAccessKeyInfo",
+        "sts:GetCallerIdentity",
+        "sts:GetServiceBearerToken",
+        "sts:AssumeRole",
+        "sts:GetFederationToken",
+        "sts:AssumeRoleWithWebIdentity"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "State access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Resource access",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "iam:*",
+        "autoscaling:*",
+        "elasticloadbalancing:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

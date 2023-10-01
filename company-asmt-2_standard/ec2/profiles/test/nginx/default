@@ -1,0 +1,30 @@
+upstream testerizator {
+    server {{ app_ip }}:8080;
+}
+
+server {
+        server_name testerization.cf *.testerization.cf;
+        listen      80;
+
+        if ($http_x_forwarded_proto = 'http') {
+            return 301 https://$host$request_uri;
+        }
+
+        charset utf-8;
+        source_charset utf-8;
+
+        error_log  /var/log/nginx/app.error.log;
+        access_log /var/log/nginx/app.access.log timed_combined;
+
+        location / {
+                proxy_set_header  Host $host;
+                proxy_set_header  X-Real-IP $remote_addr;
+
+                proxy_pass         http://testerizator;
+                proxy_http_version 1.1;
+                auth_basic off;
+                charset utf-8;
+                source_charset utf-8;
+        }
+}
+

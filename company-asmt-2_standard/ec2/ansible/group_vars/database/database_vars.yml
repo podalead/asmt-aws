@@ -1,0 +1,7 @@
+database_admin_user: "macho"
+database_admin_password: "testMatho_1"
+
+database_sql_script_folder: "{{ project_dir_profile }}/{{ profile }}/sql"
+database_dump_files:
+  - "schema.sql"
+  - "data.sql"

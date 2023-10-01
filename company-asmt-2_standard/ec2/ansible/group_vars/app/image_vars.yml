@@ -1,0 +1,4 @@
+app_tag: "v1.0.6"
+app_image_repo: "heryv1m"
+app_image_name: "testerization"
+full_spec_repo_name: "{{ app_image_repo }}/{{ app_image_name }}:{{ app_tag }}"

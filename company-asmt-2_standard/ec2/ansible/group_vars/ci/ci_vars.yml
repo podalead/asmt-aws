@@ -1,0 +1,38 @@
+simple_apt_packages:
+  - "mc"
+  - "software-properties-common"
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "gnupg-agent"
+  - "curl"
+  - "expect"
+  - "python-pip"
+  - "python3-pip"
+  - "libpq-dev"
+  - "python-dev"
+  - "zip"
+  - "nmon"
+  - "wget"
+  - "git"
+
+apt_packages:
+  - "ansible"
+  - "postgresql-{{ postgres_version }}"
+
+pip_packages:
+  - "cryptography"
+  - "psycopg2-binary"
+  - "boto"
+  - "boto3"
+  - "docker-py"
+
+apt_pack_repos:
+  - "ppa:ansible/ansible"
+  - "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"
+
+terraform_need: false
+postgres_version: 11
+
+apt_keys:
+  - "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+

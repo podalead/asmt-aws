@@ -1,0 +1,3 @@
+dir: "/home/{{ ansible_user }}/workdir"
+git_app_repo: "https://github.com/podalead/testerization.git"
+app_resourse_path: "{{ dir }}/src/main/resources"

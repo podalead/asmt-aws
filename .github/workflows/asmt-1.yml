@@ -1,0 +1,74 @@
+name: 'ASMT AWS Terragrunt Default'
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: "Select env to where need to deploy"
+        required: true
+        default: "test"
+        options:
+          - test
+      state:
+        type: choice
+        description: "Choose apply or destroy infra"
+        required: true
+        default: "apply"
+        options:
+          - apply
+          - destroy
+      region:
+        type: choice
+        description: "Choose infra region"
+        required: true
+        default: "eu-west-1"
+        options:
+          - eu-west-3
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.env }}
+    env:
+      ACCOUNT_NAME: 'non-prod'
+      TF_VERSION: '1.5.7'
+      TG_VERSION: '0.51.7'
+      WORK_DIR: ./terragrunt/${{ env.ACCOUNT_NAME }}/${{ github.event.inputs.region }}/${{ github.event.inputs.env }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ github.event.inputs.region }}
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          role-session-name: githubActionSession-${{ github.run_id }}
+
+      - name: Check terragrunt HCL
+        uses: gruntwork-io/terragrunt-action@v1
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.WORK_DIR }}
+          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
+
+      - name: Terragrunt plan
+        uses: gruntwork-io/terragrunt-action@v1
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.WORK_DIR }}
+          tg_command: 'plan'
+
+      - name: Terragrunt final ${{ github.event.inputs.state }}
+        uses: gruntwork-io/terragrunt-action@v1
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.WORK_DIR }}
+          tg_command: ${{ github.event.inputs.state }}

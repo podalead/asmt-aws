@@ -1,0 +1,5 @@
+network_name: "project_net"
+network_mode: "bridge"
+app_port: "8080"
+
+container_name: "testerizator"

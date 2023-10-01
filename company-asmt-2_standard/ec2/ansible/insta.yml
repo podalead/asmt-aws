@@ -1,0 +1,16 @@
+- hosts: "localhost"
+  connection: local
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+  gather_facts: no
+
+  tasks:
+    - name:
+      ec2_instance_facts:
+      register: keros
+      vars:
+        ansible_python_interpreter: "/usr/local/bin/python3"
+
+    - name:
+      debug: "{{ keros }}"

@@ -1,0 +1,57 @@
+- name: "Create database"
+  become: yes
+  become_user: "postgres"
+  become_method: "sudo"
+  postgresql_db:
+    login_host: "{{ database_url }}"
+    login_user: "{{ database_admin_user }}"
+    login_password: "{{ database_admin_password }}"
+    name: "{{ database_name }}"
+    state: "{{ item }}"
+  loop:
+    - "absent"
+    - "present"
+
+- name: "Create database user"
+  become: yes
+  become_user: "postgres"
+  become_method: "sudo"
+  postgresql_user:
+    login_host: "{{ database_url }}"
+    login_user: "{{ database_admin_user }}"
+    login_password: "{{ database_admin_password }}"
+    db: "{{ database_name }}"
+    name: "{{ database_user }}"
+    password: "{{ database_pass }}"
+    priv: "ALL"
+    state: present
+
+- name: "Permit views of tables"
+  become: yes
+  become_user: "postgres"
+  become_method: "sudo"
+  postgresql_privs:
+    login_host: "{{ database_url }}"
+    login_user: "{{ database_admin_user }}"
+    login_password: "{{ database_admin_password }}"
+    database: "{{ database_name }}"
+    objs: ALL_DEFAULT
+    privs: ALL
+    type: default_privs
+    role: "{{ database_user }}"
+    grant_option: yes
+
+- name: "Execute scripts into base"
+  become: yes
+  become_method: "sudo"
+  become_user: "postgres"
+  shell: |
+    set timeout -1
+    spawn psql -h {{ database_url }} -U {{ database_admin_user }} -d {{ database_name }} -a -f {{ database_sql_script_folder }}/{{ item }}
+    match_max 100000
+    expect "Password*"
+    send -- "{{ database_admin_password }}\r"
+    expect eof
+  args:
+    executable: /usr/bin/expect
+  with_items: "{{ database_dump_files }}"

@@ -1,0 +1,2 @@
+- name: "Task"
+  debug: "{{ hostvars[inventory_hostname][tag_Role_proxy] }}"

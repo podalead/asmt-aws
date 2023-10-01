@@ -1,0 +1,4 @@
+- name: "Pull container to hub repo"
+  docker_image:
+    name: "{{ full_spec_repo_name }}"
+    source: pull
